@@ -1,39 +1,54 @@
 package com.genix.architecturecomponents.ui.login
 
-import androidx.lifecycle.LiveData
+import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.genix.architecturecomponents.AppExecutors
 import com.genix.architecturecomponents.db.UserDao
+import com.genix.architecturecomponents.vo.Constants
 import com.genix.architecturecomponents.vo.User
 import javax.inject.Inject
 
-class LoginViewModel @Inject constructor(val userDao: UserDao,
-                                         val appExecutors: AppExecutors) : ViewModel() {
+class LoginViewModel
+@Inject constructor(private val userDao: UserDao,
+                    private val appExecutors: AppExecutors) : ViewModel() {
+
+    @Inject
+    lateinit var prefsEdit: SharedPreferences.Editor
 
     private val _login = MutableLiveData<Boolean>()
 
     val login get() = _login
 
     fun login(userName: String, password: String) {
-        val access = userDao.login(userName, password)
-        val isAccessed = access.value
-        _login.value = isAccessed != null
+        appExecutors.diskIO().execute {
+            val userId = userDao.login(userName, password)
+            appExecutors.mainThread().execute {
+                _login.value = userId != null
+                prefsEdit.putString(Constants.USER_ID, userId).commit()
+            }
+        }
     }
 
     fun createUser(user: User) {
         appExecutors.diskIO().execute {
-            val rowId = userDao.insert(user)
-            appExecutors.mainThread().execute {
-                if (rowId > 0) {
-                    login(user.userName, user.password!!)
+            val isExists = userDao.userNameExists(user.userName)
+            if (isExists == 0) {
+                val rowId = userDao.insert(user)
+                appExecutors.mainThread().execute {
+                    if (rowId > 0) {
+                        login(user.userName, user.password!!)
+                        prefsEdit.putString(Constants.USER_ID, user.id).commit()
+                    }
                 }
             }
         }
     }
 
-    fun getUserById(id: String): LiveData<User> = userDao.findById(id)
+    fun getUserById(id: String): User? = userDao.findById(id)
 
-    fun getUser(userName: String): LiveData<User> = userDao.findByUserName(userName)
+    fun getUser(userName: String): User? = userDao.findByUserName(userName)
+
+    fun getName(id: String): String? = userDao.findName(id)
 
 }

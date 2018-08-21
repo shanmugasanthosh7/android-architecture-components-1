@@ -42,7 +42,10 @@ class SignInFragment : DaggerFragment() {
         }
 
         loginViewModel.login.observe(this, Observer {
-            if (it) startActivity(Intent(activity, MainActivity::class.java))
+            if (it) {
+                startActivity(Intent(activity, MainActivity::class.java))
+                activity?.finish()
+            }
         })
 
         createAccount.setOnClickListener {
@@ -50,6 +53,5 @@ class SignInFragment : DaggerFragment() {
                     ?.replace(R.id.container, SignUpFragment.newInstance())
                     ?.commitNow()
         }
-
     }
 }
