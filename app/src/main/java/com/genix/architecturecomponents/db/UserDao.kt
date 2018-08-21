@@ -1,5 +1,6 @@
 package com.genix.architecturecomponents.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.genix.architecturecomponents.vo.User
 
@@ -16,7 +17,10 @@ interface UserDao {
     fun findByUserName(userName: String): User?
 
     @Query("SELECT name FROM User WHERE id = :id")
-    fun findName(id: String): String?
+    fun findName(id: String): LiveData<String>
+
+    @Query("SELECT password FROM User WHERE id = :id")
+    fun findPwd(id: String): LiveData<String>
 
     @Query("SELECT id FROM User WHERE userName = :userName AND password = :password")
     fun login(userName: String, password: String): String?

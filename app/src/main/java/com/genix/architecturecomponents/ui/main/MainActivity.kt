@@ -3,7 +3,6 @@ package com.genix.architecturecomponents.ui.main
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -25,21 +24,24 @@ class MainActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var prefsEdit: SharedPreferences.Editor
 
-    private lateinit var mainViewModel: MainActivityViewModel
+    private lateinit var mainViewModel: MainViewModel
+
+    private lateinit var userId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mainViewModel = ViewModelProviders.of(this, viewModelFactory)
-                .get(MainActivityViewModel::class.java)
+                .get(MainViewModel::class.java)
+
+        userId = prefs.getString(Constants.USER_ID, null)
+
         updateNameBtn.setOnClickListener {
-            mainViewModel.updateName(editName.text.toString(),
-                    prefs.getString(Constants.USER_ID, null))
+            mainViewModel.updateName(editName.text.toString(), userId)
         }
 
         updatePwdBtn.setOnClickListener {
-            mainViewModel.updatePassword(editPassword.text.toString(),
-                    prefs.getString(Constants.USER_ID, null))
+            mainViewModel.updatePassword(editPassword.text.toString(), userId)
         }
 
         logout.setOnClickListener {
@@ -51,7 +53,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        mainViewModel.name.observe(this, Observer { name.text = it })
-        mainViewModel.pwd.observe(this, Observer { password.text = it })
+        mainViewModel.getName(userId).observe(this, Observer { name.text = it })
+        mainViewModel.getPwd(userId).observe(this, Observer { password.text = it })
     }
 }

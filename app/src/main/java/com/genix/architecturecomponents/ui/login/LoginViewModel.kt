@@ -44,11 +44,4 @@ class LoginViewModel
             }
         }
     }
-
-    fun getUserById(id: String): User? = userDao.findById(id)
-
-    fun getUser(userName: String): User? = userDao.findByUserName(userName)
-
-    fun getName(id: String): String? = userDao.findName(id)
-
 }
