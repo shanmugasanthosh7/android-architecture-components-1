@@ -11,7 +11,7 @@ import java.util.*
         primaryKeys = ["id", "userName"])
 data class User(
         val id: String = UUID.randomUUID().toString(),
-        val name: String?,
-        val userName: String,
-        val password: String?
+        var name: String?,
+        var userName: String,
+        var password: String?
 )

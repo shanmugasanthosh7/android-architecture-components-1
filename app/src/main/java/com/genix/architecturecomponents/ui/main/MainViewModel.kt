@@ -2,7 +2,7 @@ package com.genix.architecturecomponents.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.genix.architecturecomponents.AppExecutors
+import com.genix.architecturecomponents.util.AppExecutors
 import com.genix.architecturecomponents.db.UserDao
 import javax.inject.Inject
 

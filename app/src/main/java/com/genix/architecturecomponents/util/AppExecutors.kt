@@ -1,4 +1,4 @@
-package com.genix.architecturecomponents
+package com.genix.architecturecomponents.util
 
 import android.os.Handler
 import android.os.Looper

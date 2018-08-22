@@ -1,6 +1,7 @@
 package com.genix.architecturecomponents.ui.login.signin
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import com.genix.architecturecomponents.R
 import com.genix.architecturecomponents.ui.login.LoginViewModel
 import com.genix.architecturecomponents.ui.login.signup.SignUpFragment
 import com.genix.architecturecomponents.ui.main.MainActivity
+import com.genix.architecturecomponents.vo.Constants
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.signin_fragment.*
 import javax.inject.Inject
@@ -26,6 +28,9 @@ class SignInFragment : DaggerFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var loginViewModel: LoginViewModel
+
+    @Inject
+    lateinit var prefsEdit: SharedPreferences.Editor
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -42,7 +47,8 @@ class SignInFragment : DaggerFragment() {
         }
 
         loginViewModel.login.observe(this, Observer {
-            if (it) {
+            if (it != null) {
+                prefsEdit.putString(Constants.USER_ID, it).commit()
                 startActivity(Intent(activity, MainActivity::class.java))
                 activity?.finish()
             }
